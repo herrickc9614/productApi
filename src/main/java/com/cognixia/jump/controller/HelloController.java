@@ -1,6 +1,7 @@
 package com.cognixia.jump.controller;
 
 import java.security.Principal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cognixia.jump.model.AuthenticationRequest;
 import com.cognixia.jump.model.AuthenticationResponse;
+import com.cognixia.jump.model.Sales;
+import com.cognixia.jump.model.User;
+import com.cognixia.jump.repository.SalesRepository;
+import com.cognixia.jump.repository.UserRepository;
 import com.cognixia.jump.util.JwtUtil;
 
 @RequestMapping("/api")
@@ -35,11 +41,29 @@ public class HelloController {
 	
 	@Autowired
 	JwtUtil jwtUtil;
+	
+	@Autowired
+	UserRepository userRepo;
+	
+	@Autowired
+	SalesRepository saleRepo;
 
 	
 	@GetMapping("/hello")
 	public String getHello(Principal principal) {
 		return "Hello " + principal.getName();
+	}
+	
+	@GetMapping("/sales")
+	public List<Sales> getCustomers(Principal principal) {
+	User user = userRepo.findByUsername(principal.getName()).orElse(new User());
+	
+	if(user == null)
+	{
+		throw new UsernameNotFoundException(principal.getName());
+	}
+	
+		return saleRepo.findByUserId(user.getId());
 	}
 	
 	// a user will pass their credentials and get back a JWT
