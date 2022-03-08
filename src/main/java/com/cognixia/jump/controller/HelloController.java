@@ -45,7 +45,12 @@ public class HelloController {
 	// a user will pass their credentials and get back a JWT
 	// Once JWT is given to user, can use JWT for every other request, no need to provide credentials anymore
 	@PostMapping("/login") 
-	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest request) throws Exception {
+	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest request, Principal principal) throws Exception {
+		
+		if(principal != null)
+		{
+			throw new Exception("Already Logged In");
+		}
 		
 		// try to catch the exception for bad credentials, just so we can set our own message when this doesn't work
 		try {
