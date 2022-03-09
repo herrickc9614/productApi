@@ -7,6 +7,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -29,12 +30,14 @@ public class User {
 			example = "user1", 
 			required = true)
 	@Column(unique = true, nullable = false)
+	@NotNull(message = "userName cannot be null")
 	private String username;
 	
 	@Schema(description = "Accounts password for user",
 			example = "password", 
 			required = true)
 	@Column(nullable = false)
+	@NotNull(message = "Password cannot be null")
 	private String password;
 	
 	@Schema(description = "Role of current user",
@@ -42,6 +45,7 @@ public class User {
 			required = true)
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
+	@NotNull(message = "Role cannot be null")
 	private Role role;
 	
 	@Schema(description = "checks if user is active acount",

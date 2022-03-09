@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -41,12 +42,14 @@ public class Sales {
 			example = "1", 
 			required = true)
 	@Column(nullable = false)
+	@NotNull(message = "totalProduct cannot be null")
 	private Integer totalProduct;
 
 	@Schema(description = "Total Dollar Amount",
 			example = "1", 
 			required = true)
 	@Column(nullable = false)
+	@NotNull(message = "totalAmount cannot be null")
 	private Integer totalAmount;
 
 	

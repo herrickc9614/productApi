@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -25,18 +26,21 @@ public class Product {
 			example = "Toy", 
 			required = true)
 	@Column(nullable = false)
+	@NotNull(message = "productName cannot be null")
 	private String productName;
 	
 	@Schema(description = "Cost of Product",
 			example = "15", 
 			required = true)
 	@Column(nullable = false)
+	@NotNull(message = "productCost cannot be null")
 	private Integer productCost;
 	
 	@Schema(description = "Total Amount of Product",
 			example = "154", 
 			required = true)
 	@Column(nullable = false)
+	@NotNull(message = "totalProduct cannot be null")
 	private Integer totalProduct;
 	
 	public Product() {
