@@ -50,7 +50,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
 			.antMatchers(HttpMethod.PUT, "/api/products").hasRole("ADMIN")
 			.antMatchers(HttpMethod.DELETE, "/api/products/{id}").hasRole("ADMIN")
-			.anyRequest().authenticated()
+			//.anyRequest().authenticated()
 			.and().sessionManagement()
 				.sessionCreationPolicy( SessionCreationPolicy.STATELESS ); // tell spring security to not create any sessions, we want to be
 																		   // stateless b/c we're using jwts

@@ -65,7 +65,7 @@ public class HelloController {
 	}
 	
 	@PutMapping("/user")
-	public ResponseEntity<User> updateProduct(@RequestBody String password, Principal principal) throws ResourceNotFoundException {
+	public ResponseEntity<User> updateUser(@RequestBody String password, Principal principal) throws ResourceNotFoundException {
 
 		User user = userRepo.findByUsername(principal.getName()).orElse(new User());
 		
