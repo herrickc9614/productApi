@@ -34,9 +34,13 @@ import com.cognixia.jump.repository.SalesRepository;
 import com.cognixia.jump.repository.UserRepository;
 import com.cognixia.jump.util.JwtUtil;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RequestMapping("/api")
 @RestController
-public class HelloController {
+@Tag(name = "Product", description ="the API for managing Products")
+public class ProductController {
 	
 	// manages and handles which users are valid
 	@Autowired
@@ -59,11 +63,15 @@ public class HelloController {
 	
 	
 	//CRUD for User
+	@Operation(summary = "used to print a message to the user",
+			   description = "gets the current user from the principal and returns it in a message")
 	@GetMapping("/user")
 	public String getHello(Principal principal) {
 		return "Hello " + principal.getName();
 	}
 	
+	@Operation(summary = "updates the users password",
+			   description = "gets the a user from the database by using their pricipal, sets the password to a value passed in by the user, then updates the original database entry")
 	@PutMapping("/user")
 	public ResponseEntity<User> updateUser(@RequestBody String password, Principal principal) throws ResourceNotFoundException {
 
@@ -78,11 +86,13 @@ public class HelloController {
 			return ResponseEntity.status(200).body(updated);
 		}
 		
-		throw new ResourceNotFoundException("Product with id = " + user.getId() + " was not found");
+		throw new ResourceNotFoundException("User with id = " + user.getId() + " was not found");
 	}
 	
 	
 	//CRUD for sales
+	@Operation(summary = "gets all the sales of the current user",
+			   description = "uses the principle to determmine which user's database to retrieve, uses that userId to find their sales database, returns all items from sales database that matches")
 	@GetMapping("/sales")
 	public List<Sales> customerInfo(Principal principal) {
 		
@@ -91,6 +101,8 @@ public class HelloController {
 		return saleRepo.findByUserId(user.getId());
 	}
 	
+	@Operation(summary = "adds a sales object to the sales_db",
+			   description = "user passes in a product that want to add, uses the pricipal to determine the user, constructs a sales item by combining the product passed and info from the user_db, adds the new sales object to the sales_db")
 	@PostMapping("/sales")
 	public ResponseEntity<Sales> createSales(@RequestBody Product product, Principal principal) throws ResourceNotFoundException {
 		
@@ -113,32 +125,46 @@ public class HelloController {
 		throw new ResourceNotFoundException("Product with id = " + product.getId() + " was not found");	
 	}
 	
+	@Operation(summary = "removes a sales object from the sales_db",
+			   description = "user passes in an id, checks if sales object exists on that id, checks if user is correct, deletes sales from database")
 	@DeleteMapping("/sales/{id}")
-	public ResponseEntity<Sales> deleteSales(@PathVariable int id) throws ResourceNotFoundException {
+	public ResponseEntity<Sales> deleteSales(@PathVariable int id, Principal principal) throws ResourceNotFoundException {
 		
 		if( saleRepo.existsById(id) ) {
+			
 			
 			// get the book that will be deleted...
 			Sales deleted = saleRepo.findById(id).get();
 			
+			if(principal.getName() == deleted.getUser())
+			{
 			// ...delete the book...
 			saleRepo.deleteById(id);
+			}
+			else
+			{
+				throw new ResourceNotFoundException("Can't Find Matching Sales Object");
+			}
 			
 			// ...return the book that was just deleted in the response
 			return ResponseEntity.status(200).body(deleted);
 		}
 		
-		throw new ResourceNotFoundException("Book with id = " + id + " was not found");
+		throw new ResourceNotFoundException("Sales with id = " + id + " was not found");
 	}
 	
 	
 	//CRUD for products
+	@Operation(summary = "retrieves all the products in database",
+			   description = "recieves a list of products form the product_db and returns it to user")
 	@GetMapping("/products")
 	public List<Product> getAllProducts() {
 	
 	 return productRepo.findAll();
 	}
 	
+	@Operation(summary = "creates a product in the database",
+			   description = "user sends in a product from the body, it sets the id to null, then it creates it in the database")
 	@PostMapping("/products")
 	public ResponseEntity<Product> createProduct(@RequestBody Product product) {
 		
@@ -149,6 +175,8 @@ public class HelloController {
 		return ResponseEntity.status(201).body(created);
 	}
 	
+	@Operation(summary = "changes an item in the product database",
+			   description = "takes in product information from the user, checks to see if the product exists, updates the product in the database")
 	@PutMapping("/products")
 	public ResponseEntity<Product> updateProduct(@RequestBody Product product) throws ResourceNotFoundException {
 
@@ -161,6 +189,8 @@ public class HelloController {
 		throw new ResourceNotFoundException("Product with id = " + product.getId() + " was not found");
 	}
 	
+	@Operation(summary = "removes a product from the database",
+			   description = "user passes an id of product to be deleted, checks if that product exists, creates a temp product from that id, deletes the product from the database")
 	@DeleteMapping("/products/{id}")
 	public ResponseEntity<Product> deleteProduct(@PathVariable int id) throws ResourceNotFoundException {
 		
@@ -176,11 +206,13 @@ public class HelloController {
 			return ResponseEntity.status(200).body(deleted);
 		}
 		
-		throw new ResourceNotFoundException("Book with id = " + id + " was not found");
+		throw new ResourceNotFoundException("Product with id = " + id + " was not found");
 	}
 	
 	// a user will pass their credentials and get back a JWT
 	// Once JWT is given to user, can use JWT for every other request, no need to provide credentials anymore
+	@Operation(summary = "creates a token and saves it in Cookies",
+			   description = "passes in a username a password from the body as well as a principal, if the principal already has data the user is already signed in so dont allow a 2nd login, authenticates the username and password entered, checks if the username and password is in database, creates a jwt, saves it in Cookies")
 	@PostMapping("/login") 
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest request, Principal principal) throws Exception {
 		
@@ -218,6 +250,8 @@ public class HelloController {
 		return ResponseEntity.status(201).header(HttpHeaders.SET_COOKIE, cookie.toString()).body("Login Successful");
 	}
 	
+	@Operation(summary = "logout the user",
+			   description = "removes the jwt from Cookies")
 	@PostMapping("/logout") 
 	public ResponseEntity<?> removeAuthenticationToken() throws Exception {	
 		

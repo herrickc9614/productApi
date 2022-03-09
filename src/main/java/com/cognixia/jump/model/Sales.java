@@ -12,25 +12,40 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 
 @Entity
 public class Sales {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Schema(description = "ID for Sales",
+	example = "1", 
+	required = true)
 	private Integer saleId;
 	
 	@ManyToOne
+	@Schema(description = "Connects the User table by userID", 
+	required = true)
     @JoinColumn(name = "user_id")
 	private User user;
 	
 	@ManyToOne
+	@Schema(description = "Connects the Products table by productID",
+	required = true)
     @JoinColumn(name = "product_id")
 	private Product product;
 	
+	@Schema(description = "Total Amount Purchased",
+			example = "1", 
+			required = true)
 	@Column(nullable = false)
 	private Integer totalProduct;
 
+	@Schema(description = "Total Dollar Amount",
+			example = "1", 
+			required = true)
 	@Column(nullable = false)
 	private Integer totalAmount;
 
@@ -72,6 +87,10 @@ public class Sales {
 		this.totalAmount = totalAmount;
 	}
 
+	public String getUser() {
+		return user.getUsername();
+	}
+	
 	public void setUser(User user) {
 		this.user = user;
 	}

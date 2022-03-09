@@ -43,14 +43,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //			.authorizeRequests()
 //			.antMatchers("/api/authenticate").permitAll() // permit anyone to create a token as long as they're valid user
 //			.anyRequest().authenticated(); // any request to any of our APIs needs to be authenticated (token or user info)
-		
 		http.csrf().disable()
 			.authorizeRequests()
 			.antMatchers("/api/login").permitAll()
+			.antMatchers("/v3/api-docs/").permitAll()
 			.antMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
 			.antMatchers(HttpMethod.PUT, "/api/products").hasRole("ADMIN")
 			.antMatchers(HttpMethod.DELETE, "/api/products/{id}").hasRole("ADMIN")
-			//.anyRequest().authenticated()
+			.anyRequest().authenticated()
 			.and().sessionManagement()
 				.sessionCreationPolicy( SessionCreationPolicy.STATELESS ); // tell spring security to not create any sessions, we want to be
 																		   // stateless b/c we're using jwts

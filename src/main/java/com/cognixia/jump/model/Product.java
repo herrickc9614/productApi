@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Entity
 public class Product {
 
@@ -13,15 +15,27 @@ public class Product {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Schema(description = "ID for Product",
+			example = "1", 
+			required = true)
 	@Column(name="product_id")
 	private Integer productID;
 	
+	@Schema(description = "Name for Product",
+			example = "Toy", 
+			required = true)
 	@Column(nullable = false)
 	private String productName;
 	
+	@Schema(description = "Cost of Product",
+			example = "15", 
+			required = true)
 	@Column(nullable = false)
 	private Integer productCost;
 	
+	@Schema(description = "Total Amount of Product",
+			example = "154", 
+			required = true)
 	@Column(nullable = false)
 	private Integer totalProduct;
 	

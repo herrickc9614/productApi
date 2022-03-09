@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Entity
 public class User {
 
@@ -17,19 +19,34 @@ public class User {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Schema(description = "ID for User",
+	example = "1", 
+	required = true)
 	@Column(name="user_id")
 	private Integer userID;
 	
+	@Schema(description = "Accounts username for user",
+			example = "user1", 
+			required = true)
 	@Column(unique = true, nullable = false)
 	private String username;
 	
+	@Schema(description = "Accounts password for user",
+			example = "password", 
+			required = true)
 	@Column(nullable = false)
 	private String password;
 	
+	@Schema(description = "Role of current user",
+			example = "ROLE_USER", 
+			required = true)
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Role role;
 	
+	@Schema(description = "checks if user is active acount",
+			example = "true", 
+			required = true)
 	@Column(columnDefinition = "boolean default true")
 	private boolean enabled;
 
