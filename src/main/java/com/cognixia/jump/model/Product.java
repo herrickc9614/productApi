@@ -9,6 +9,7 @@ import javax.persistence.Id;
 @Entity
 public class Product {
 
+	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,9 +29,9 @@ public class Product {
 		this(null, "N/A", 1, 1);
 	}
 	
-	public Product(Integer id, String productName, int productCost, int totalproduct) {
+	public Product(Integer productID, String productName, int productCost, int totalproduct) {
 		super();
-		this.productID = id;
+		this.productID = productID;
 		this.productName = productName;
 		this.productCost = productCost;
 		this.totalProduct = totalproduct;
@@ -66,6 +67,10 @@ public class Product {
 
 	public void setTotalProduct(Integer totalProduct) {
 		this.totalProduct = totalProduct;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 	
 	

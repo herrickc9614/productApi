@@ -46,7 +46,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 		
 		http.csrf().disable()
 			.authorizeRequests()
-			.antMatchers("/api/login").permitAll() // permit anyone to create a token as long as they're valid user
+			.antMatchers("/api/login").permitAll()
+			.antMatchers(HttpMethod.POST, "/api/products").hasRole("ADMIN")
+			.antMatchers(HttpMethod.PUT, "/api/products").hasRole("ADMIN")
+			.antMatchers(HttpMethod.DELETE, "/api/products/{id}").hasRole("ADMIN")
 			.anyRequest().authenticated()
 			.and().sessionManagement()
 				.sessionCreationPolicy( SessionCreationPolicy.STATELESS ); // tell spring security to not create any sessions, we want to be

@@ -72,4 +72,17 @@ public class Sales {
 		this.totalAmount = totalAmount;
 	}
 
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public String getProduct() {
+		return product.getProductName();
+	}
+
+	public void setProduct(Product product) {
+		this.product = product;
+	}
+	
+
 }

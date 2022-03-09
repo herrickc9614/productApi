@@ -42,14 +42,20 @@ public class JwtRequestFilter extends OncePerRequestFilter { // abstract class t
 	
 		String jwt = null;
 		String username = null;
-		
-		for(Cookie c : request.getCookies())
+			
+		if(request.getCookies() != null)
 		{
-			if((c.getName().equals("jwt")))
+			Cookie[] cookies = request.getCookies();
+			
+			for(Cookie c : cookies)
 			{
-				jwt = c.getValue();
+				if((c.getName().equals("jwt")))
+				{
+					jwt = c.getValue();
+				}
 			}
 		}
+
 		
 		// if header was null, no jwt was sent
 		// then if there was a jwt, it would be formatted like "Bearer <token>"

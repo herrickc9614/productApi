@@ -14,16 +14,22 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cognixia.jump.exception.ResourceNotFoundException;
 import com.cognixia.jump.model.AuthenticationRequest;
 import com.cognixia.jump.model.AuthenticationResponse;
+import com.cognixia.jump.model.Product;
 import com.cognixia.jump.model.Sales;
 import com.cognixia.jump.model.User;
+import com.cognixia.jump.repository.ProductRepository;
 import com.cognixia.jump.repository.SalesRepository;
 import com.cognixia.jump.repository.UserRepository;
 import com.cognixia.jump.util.JwtUtil;
@@ -47,23 +53,130 @@ public class HelloController {
 	
 	@Autowired
 	SalesRepository saleRepo;
-
 	
-	@GetMapping("/hello")
+	@Autowired
+	ProductRepository productRepo;
+	
+	
+	//CRUD for User
+	@GetMapping("/user")
 	public String getHello(Principal principal) {
 		return "Hello " + principal.getName();
 	}
 	
-	@GetMapping("/sales")
-	public List<Sales> getCustomers(Principal principal) {
-	User user = userRepo.findByUsername(principal.getName()).orElse(new User());
-	
-	if(user == null)
-	{
-		throw new UsernameNotFoundException(principal.getName());
+	@PutMapping("/user")
+	public ResponseEntity<User> updateProduct(@RequestBody String password, Principal principal) throws ResourceNotFoundException {
+
+		User user = userRepo.findByUsername(principal.getName()).orElse(new User());
+		
+		if( userRepo.existsById( user.getId() ) ) 
+		{
+			
+			user.setPassword(password);
+			User updated = userRepo.save(user);
+			
+			return ResponseEntity.status(200).body(updated);
+		}
+		
+		throw new ResourceNotFoundException("Product with id = " + user.getId() + " was not found");
 	}
 	
+	
+	//CRUD for sales
+	@GetMapping("/sales")
+	public List<Sales> customerInfo(Principal principal) {
+		
+		User user = userRepo.findByUsername(principal.getName()).orElse(new User());
+	
 		return saleRepo.findByUserId(user.getId());
+	}
+	
+	@PostMapping("/sales")
+	public ResponseEntity<Sales> createSales(@RequestBody Product product, Principal principal) throws ResourceNotFoundException {
+		
+		Sales sales = new Sales();
+		User user = userRepo.findByUsername(principal.getName()).orElse(new User());
+		
+		if( productRepo.existsById( product.getId() ) ) 
+		{
+			sales.setId(null);
+			sales.setUser(user);
+			sales.setProduct(product);
+			sales.setTotalProduct(2);
+			sales.setTotalAmount(sales.getTotalProduct() * product.getProductCost());
+		
+			Sales created = saleRepo.save(sales);
+		
+			return ResponseEntity.status(201).body(created);
+		}
+		
+		throw new ResourceNotFoundException("Product with id = " + product.getId() + " was not found");	
+	}
+	
+	@DeleteMapping("/sales/{id}")
+	public ResponseEntity<Sales> deleteSales(@PathVariable int id) throws ResourceNotFoundException {
+		
+		if( saleRepo.existsById(id) ) {
+			
+			// get the book that will be deleted...
+			Sales deleted = saleRepo.findById(id).get();
+			
+			// ...delete the book...
+			saleRepo.deleteById(id);
+			
+			// ...return the book that was just deleted in the response
+			return ResponseEntity.status(200).body(deleted);
+		}
+		
+		throw new ResourceNotFoundException("Book with id = " + id + " was not found");
+	}
+	
+	
+	//CRUD for products
+	@GetMapping("/products")
+	public List<Product> getAllProducts() {
+	
+	 return productRepo.findAll();
+	}
+	
+	@PostMapping("/products")
+	public ResponseEntity<Product> createProduct(@RequestBody Product product) {
+		
+		product.setId(null);
+		
+		Product created = productRepo.save(product);
+		
+		return ResponseEntity.status(201).body(created);
+	}
+	
+	@PutMapping("/products")
+	public ResponseEntity<Product> updateProduct(@RequestBody Product product) throws ResourceNotFoundException {
+
+		if( productRepo.existsById( product.getId() ) ) {
+			Product updated = productRepo.save(product);
+			
+			return ResponseEntity.status(200).body(updated);
+		}
+		
+		throw new ResourceNotFoundException("Product with id = " + product.getId() + " was not found");
+	}
+	
+	@DeleteMapping("/products/{id}")
+	public ResponseEntity<Product> deleteProduct(@PathVariable int id) throws ResourceNotFoundException {
+		
+		if( productRepo.existsById(id) ) {
+			
+			// get the book that will be deleted...
+			Product deleted = productRepo.findById(id).get();
+			
+			// ...delete the book...
+			productRepo.deleteById(id);
+			
+			// ...return the book that was just deleted in the response
+			return ResponseEntity.status(200).body(deleted);
+		}
+		
+		throw new ResourceNotFoundException("Book with id = " + id + " was not found");
 	}
 	
 	// a user will pass their credentials and get back a JWT
